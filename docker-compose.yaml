@@ -1,0 +1,15 @@
+services:
+  k8s-next-demo:
+    container_name: k8s-next-demo
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_BRANCH: "${NEXT_PUBLIC_BRANCH}"
+        NEXT_PUBLIC_USERNAME: "${NEXT_PUBLIC_USERNAME}"
+    image: k8s-next-demo:latest
+    pull_policy: never
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ./.env
+        required: true
