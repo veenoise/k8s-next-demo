@@ -47,20 +47,20 @@ pipeline {
                 }
             }
         }
+    }
 
-        post {
-            success {
-                echo 'Pipeline Success!'
-            }
-            failure {
-                echo 'Pipeline Failed!'
-            }
-            always {
-                sh '''
-                    docker rmi $(docker image ls --format "{{.Repository}}:{{.Tag}}" | grep ${APP_NAME}) || true
-                    echo 'Deleted unused images!'
-                '''
-            }
+    post {
+        success {
+            echo 'Pipeline Success!'
+        }
+        failure {
+            echo 'Pipeline Failed!'
+        }
+        always {
+            sh '''
+                docker rmi $(docker image ls --format "{{.Repository}}:{{.Tag}}" | grep ${APP_NAME}) || true
+                echo 'Deleted unused images!'
+            '''
         }
     }
 }
