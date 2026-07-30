@@ -18,13 +18,15 @@ pipeline {
             }
         }
         stage('Docker Build') {
-            withInfisical(configuration: [infisicalCredentialId: 'jenkins_universal_auth', infisicalEnvironmentSlug: "${ENV_SLUG}", infisicalProjectSlug: 'k8s-next-demo', infisicalUrl: 'https://infisical.sabihinmolang.eu.org'], infisicalSecrets: [infisicalSecret(includeImports: true, path: '/', secretValues: [[infisicalKey: 'NEXT_PUBLIC_BRANCH'], [infisicalKey: 'NEXT_PUBLIC_USERNAME']])]) {
-                sh '''
-                    docker build -t ${APP_NAME}:${BRANCH_NAME} \
-                    --build-arg NEXT_PUBLIC_BRANCH="${NEXT_PUBLIC_BRANCH}" \
-                    --build-arg NEXT_PUBLIC_USERNAME="${NEXT_PUBLIC_USERNAME}" \
-                    .
-                '''
+            steps {
+                withInfisical(configuration: [infisicalCredentialId: 'jenkins_universal_auth', infisicalEnvironmentSlug: "${ENV_SLUG}", infisicalProjectSlug: 'k8s-next-demo', infisicalUrl: 'https://infisical.sabihinmolang.eu.org'], infisicalSecrets: [infisicalSecret(includeImports: true, path: '/', secretValues: [[infisicalKey: 'NEXT_PUBLIC_BRANCH'], [infisicalKey: 'NEXT_PUBLIC_USERNAME']])]) {
+                    sh '''
+                        docker build -t ${APP_NAME}:${BRANCH_NAME} \
+                        --build-arg NEXT_PUBLIC_BRANCH="${NEXT_PUBLIC_BRANCH}" \
+                        --build-arg NEXT_PUBLIC_USERNAME="${NEXT_PUBLIC_USERNAME}" \
+                        .
+                    '''
+                }
             }
         }
         stage('Tag to Quay') {
