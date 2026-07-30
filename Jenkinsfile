@@ -8,6 +8,20 @@ pipeline {
     }
 
     stages {
+        stage('Trivy Scan') {
+            steps {
+                sh 'trivy fs . --exit-code 1 -s HIGH,CRITICAL --ignore-unfixed --scanners vuln,misconfig,secret'
+            }
+            post {
+                failure {
+                    sh 'echo Trivy Scan Failed'
+                }
+                success {
+                    sh 'echo Trivy Scan Success'
+                }
+            }
+        }
+
         stage('Docker Login') {
             steps {
                 withInfisical(configuration: [infisicalCredentialId: 'jenkins_universal_auth', infisicalEnvironmentSlug: 'dev', infisicalProjectSlug: 'global-quay', infisicalUrl: 'https://infisical.sabihinmolang.eu.org'], infisicalSecrets: [infisicalSecret(includeImports: true, path: '/', secretValues: [[infisicalKey: 'QUAY_PASSWORD'], [infisicalKey: 'QUAY_HOSTNAME'], [infisicalKey: 'QUAY_USERNAME']])]) {
