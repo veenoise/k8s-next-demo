@@ -4,7 +4,7 @@ pipeline {
     environment {
         APP_NAME = "k8s-next-demo"
         ENV_SLUG = "${BRANCH_NAME == 'develop' ? 'dev' : BRANCH_NAME}"
-
+        SHORT_COMMIT = "${GIT_COMMIT[0..7]}"
     }
 
     stages {
@@ -48,6 +48,7 @@ pipeline {
                 withInfisical(configuration: [infisicalCredentialId: 'jenkins_universal_auth', infisicalEnvironmentSlug: 'dev', infisicalProjectSlug: 'global-quay', infisicalUrl: 'https://infisical.sabihinmolang.eu.org'], infisicalSecrets: [infisicalSecret(includeImports: true, path: '/', secretValues: [[infisicalKey: 'QUAY_PASSWORD'], [infisicalKey: 'QUAY_HOSTNAME'], [infisicalKey: 'QUAY_USERNAME']])]) {
                     sh '''
                         docker tag ${APP_NAME}:${BRANCH_NAME} ${QUAY_HOSTNAME}/${QUAY_USERNAME}/${APP_NAME}:${BRANCH_NAME}
+                        docker tag ${APP_NAME}:${BRANCH_NAME} ${QUAY_HOSTNAME}/${QUAY_USERNAME}/${APP_NAME}:${SHORT_COMMIT}
                     '''
                 }
             }
@@ -57,6 +58,7 @@ pipeline {
                 withInfisical(configuration: [infisicalCredentialId: 'jenkins_universal_auth', infisicalEnvironmentSlug: 'dev', infisicalProjectSlug: 'global-quay', infisicalUrl: 'https://infisical.sabihinmolang.eu.org'], infisicalSecrets: [infisicalSecret(includeImports: true, path: '/', secretValues: [[infisicalKey: 'QUAY_PASSWORD'], [infisicalKey: 'QUAY_HOSTNAME'], [infisicalKey: 'QUAY_USERNAME']])]) {
                     sh '''
                         docker push ${QUAY_HOSTNAME}/${QUAY_USERNAME}/${APP_NAME}:${BRANCH_NAME}
+                        docker push ${QUAY_HOSTNAME}/${QUAY_USERNAME}/${APP_NAME}:${SHORT_COMMIT}
                     '''
                 }
             }
